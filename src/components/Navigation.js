@@ -43,7 +43,7 @@ const NavigationAuth = ({ authUser, history }) => {
         >
           <Home />
         </IconButton>
-        <Typography variant="title" color="inherit" className="grow">
+        <Typography variant="subtitle1" color="inherit" className="grow">
           Candidatas Adalab
         </Typography>
         <IconButton
