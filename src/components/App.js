@@ -16,6 +16,8 @@ import withAuthentication from './auth/withAuthentication';
 
 import * as ROUTES from '../constants/routes';
 
+import './App.scss';
+
 const App = () => (
   <Router>
     <Route
