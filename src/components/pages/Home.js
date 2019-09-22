@@ -1,38 +1,86 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import withAuthorization from '../auth/withAuthorization';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { db } from '../../firebase/firebase';
 
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { Table, TableBody, TableCell, TableHead, TableRow, Box, Paper, Typography  } from '@material-ui/core';
+import { Face } from '@material-ui/icons';
+
 
 const HomePage = ({ authUser }) => {
-  const [tabIndex, setTabIndex] = useState(0);
+  const [values, loading, error] = useCollectionData(
+    db.collection('candidatas'),
+    {
+      idField: 'id',
+      snapshotListenOptions: { includeMetadataChanges: true }
+    }
+  )
 
-  const handleChange = (event, tabIndex) => {
-    setTabIndex(tabIndex);
-  };
-
+  if(error || loading) return null
   return (
-    <div>
-      <Tabs
-        onChange={handleChange}
-        value={tabIndex}
-        indicatorColor="primary"
-        textColor="primary"
+    <>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        component="main"
       >
-        <Tab label="1" />
-        <Tab label="2" />
-        <Tab label="3" />
-      </Tabs>
+        <Box maxWidth="sm">
+          <Box display="flex" alignItems="center" justifyContent="space-between" style={{ padding: '1em' }}>
+            <Typography variant="subtitle1">Nuevas candidatas</Typography>
+            <input type="text"/>
+          </Box>
+          <Paper>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nombre</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Edad</TableCell>
+                  <TableCell>Código postal</TableCell>
+                  <TableCell align="right">Fecha de nacimiento</TableCell>
+                </TableRow>
+              </TableHead>
 
-      <p>Hi {authUser.email}!</p>
-    </div>
+              <TableBody>
+                {values && values.map((props, i) => {
+                  return (
+                    <Candidata {...props} key={i} />
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </Paper>
+        </Box>
+      </Box>
+    </>
   );
 };
 
 HomePage.propTypes = {
   authUser: PropTypes.object.isRequired,
 };
+
+
+
+const Candidata = ({nombre, email, edad, codigoPostal, fechaDeNacimiento}) => {
+  return (
+    <TableRow>
+      <TableCell>
+        <Box display="flex" alignItems="center">
+          <Face style={{ marginRight: '.5em' }} />
+          {nombre}
+        </Box>
+      </TableCell>
+      <TableCell>{email}</TableCell>
+      <TableCell>{edad}</TableCell>
+      <TableCell>{codigoPostal}</TableCell>
+      <TableCell align="right">{fechaDeNacimiento}</TableCell>
+    </TableRow>
+  )
+}
 
 const authCondition = authUser => !!authUser;
 
