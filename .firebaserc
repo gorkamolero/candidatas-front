@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "candidatas-front"
+    "default": "candidatas-front",
+    "adalab": "adalab-35b1f"
   }
 }
