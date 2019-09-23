@@ -4,7 +4,7 @@ import withAuthorization from '../auth/withAuthorization';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { db } from '../../firebase/firebase';
 
-import { Table, TableBody, TableCell, TableHead, TableRow, Box, Paper, Typography  } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableHead, TableRow, Box, Paper, Typography, TextField  } from '@material-ui/core';
 import { Face } from '@material-ui/icons';
 
 
@@ -17,7 +17,16 @@ const HomePage = ({ authUser }) => {
     }
   )
 
+  const [filter, setFilter] = useState('')
+
   if(error || loading) return null
+
+  const renderedValues = values.filter(({nombre, email}) => (
+    nombre.toLowerCase().includes(filter.toLowerCase()) || email.toLowerCase().includes(filter.toLowerCase())
+  ))
+
+  //Oneliner:
+  // const renderedValues = values.filter(({nombre, email}) => [email, nombre].some(v.toLowerCase() => v.includes(filter.toLowerCase())))
   return (
     <>
       <Box
@@ -29,9 +38,20 @@ const HomePage = ({ authUser }) => {
       >
         <Box maxWidth="sm">
           <Box display="flex" alignItems="center" justifyContent="space-between" style={{ padding: '1em' }}>
-            <Typography variant="subtitle1">Nuevas candidatas</Typography>
-            <input type="text"/>
+            <div>
+              <Typography variant="subtitle1">Nuevas candidatas</Typography>
+              <Typography variant="caption">(Zapier refresca cada 15 minutos)</Typography>
+            </div>
+
+            <TextField
+              label="Filtrar resultados"
+              placeholder="Filtrar resultados"
+              variant="outlined"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            />
           </Box>
+
           <Paper>
             <Table>
               <TableHead>
@@ -45,7 +65,7 @@ const HomePage = ({ authUser }) => {
               </TableHead>
 
               <TableBody>
-                {values && values.map((props, i) => {
+                {values && renderedValues.map((props, i) => {
                   return (
                     <Candidata {...props} key={i} />
                   )
