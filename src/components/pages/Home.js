@@ -19,11 +19,11 @@ const HomePage = ({ authUser }) => {
 
   const [filter, setFilter] = useState('')
 
-  if(error || loading) return null
+  if(loading) return null
 
-  const renderedValues = values.filter(({nombre, email}) => (
+  const renderedValues =  values ? values.filter(({nombre, email}) => (
     nombre.toLowerCase().includes(filter.toLowerCase()) || email.toLowerCase().includes(filter.toLowerCase())
-  ))
+  )) : []
 
   //Oneliner:
   // const renderedValues = values.filter(({nombre, email}) => [email, nombre].some(v.toLowerCase() => v.includes(filter.toLowerCase())))
@@ -36,44 +36,50 @@ const HomePage = ({ authUser }) => {
         justifyContent="center"
         component="main"
       >
-        <Box maxWidth="sm">
-          <Box display="flex" alignItems="center" justifyContent="space-between" style={{ padding: '1em' }}>
-            <div>
-              <Typography variant="subtitle1">Nuevas candidatas</Typography>
-              <Typography variant="caption">(Zapier refresca cada 15 minutos)</Typography>
-            </div>
+        {
+          error ? (
+            <p>Error: no tienes permisos</p>
+          ) : (
+            <Box maxWidth="sm">
+              <Box display="flex" alignItems="center" justifyContent="space-between" style={{ padding: '1em' }}>
+                <div>
+                  <Typography variant="subtitle1">Nuevas candidatas</Typography>
+                  <Typography variant="caption">(Zapier refresca cada 15 minutos)</Typography>
+                </div>
 
-            <TextField
-              label="Filtrar resultados"
-              placeholder="Filtrar resultados"
-              variant="outlined"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            />
-          </Box>
+                <TextField
+                  label="Filtrar resultados"
+                  placeholder="Filtrar resultados"
+                  variant="outlined"
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                />
+              </Box>
 
-          <Paper>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Nombre</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Edad</TableCell>
-                  <TableCell>Código postal</TableCell>
-                  <TableCell align="right">Fecha de nacimiento</TableCell>
-                </TableRow>
-              </TableHead>
+              <Paper>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Nombre</TableCell>
+                      <TableCell>Email</TableCell>
+                      <TableCell>Edad</TableCell>
+                      <TableCell>Código postal</TableCell>
+                      <TableCell align="right">Fecha de nacimiento</TableCell>
+                    </TableRow>
+                  </TableHead>
 
-              <TableBody>
-                {values && renderedValues.map((props, i) => {
-                  return (
-                    <Candidata {...props} key={i} />
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </Paper>
-        </Box>
+                  <TableBody>
+                    {renderedValues && renderedValues.map((props, i) => {
+                      return (
+                        <Candidata {...props} key={i} />
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </Box>
+          )
+        }
       </Box>
     </>
   );
